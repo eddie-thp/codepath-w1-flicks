@@ -2,15 +2,23 @@ package org.ethp.codepath.flicks;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.ethp.codepath.flicks.models.Movie;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
 public class MovieActivity extends AppCompatActivity {
+
+    private List<Movie> movies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +32,22 @@ public class MovieActivity extends AppCompatActivity {
         asyncHttpClient.get(nowPlayingURL, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
+                try {
+                    JSONArray nowPlayingResultsJSON = response.getJSONArray("results");
+
+                    movies = Movie.fromJSONArray(nowPlayingResultsJSON);
+
+                    for (Movie m : movies)
+                    {
+                        Log.d("MOVIE_REQUEST", " Movie: " + m.getOriginalTitle());
+                    }
+
+
+                } catch (JSONException jsonEx) {
+                    // TODO error logging
+                    jsonEx.printStackTrace();
+                }
+
             }
 
             @Override
