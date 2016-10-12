@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <!-- using tools to simulate my view in the editor
+        xmlns:tools="http://schemas.android.com/tools"
+    -->
+
+    <!--
+    app:srcCompat="@mipmap/ic_launcher"
+    -->
+    <ImageView
+        tools:src="@mipmap/ic_launcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/ivMovieImage" />
+
+    <!--
+    android:text="TextView"
+    -->
+    <TextView
+        tools:text="Captain America: Civil War"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/ivMovieImage"
+        android:layout_toEndOf="@+id/ivMovieImage"
+        android:id="@+id/tvTitle"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <!--
+        android:text="TextView"
+    -->
+    <TextView
+        tools:text="A story set on the offshore drilling rig Deepwater Horizon, which exploded during April 2010 and created the worst oil spill in U.S. history."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvTitle"
+        android:layout_toRightOf="@+id/ivMovieImage"
+        android:layout_toEndOf="@+id/ivMovieImage"
+        android:id="@+id/tvOverview" />
+</RelativeLayout>
