@@ -17,8 +17,6 @@ import org.ethp.codepath.flicks.models.Movie;
 
 import java.util.List;
 
-import static android.R.attr.orientation;
-import static android.R.attr.resource;
 import static org.ethp.codepath.flicks.R.id.tvOverview;
 import static org.ethp.codepath.flicks.R.id.tvTitle;
 
@@ -78,7 +76,7 @@ public class MovieArrayAdapter extends ArrayAdapter {
             image = m.getBackdropPath();
         }
 
-        Picasso.with(getContext()).load(image).into(vh.ivPoster);
+        Picasso.with(getContext()).load(image).placeholder(R.drawable.poster_loading).error(R.drawable.poster_unavailable).into(vh.ivPoster);
 
         return convertView;
     }
