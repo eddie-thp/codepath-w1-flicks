@@ -17,6 +17,8 @@ import org.ethp.codepath.flicks.models.Movie;
 
 import java.util.List;
 
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+
 import static org.ethp.codepath.flicks.R.id.tvOverview;
 import static org.ethp.codepath.flicks.R.id.tvTitle;
 
@@ -76,7 +78,11 @@ public class MovieArrayAdapter extends ArrayAdapter {
             image = m.getBackdropPath();
         }
 
-        Picasso.with(getContext()).load(image).placeholder(R.drawable.poster_loading).error(R.drawable.poster_unavailable).into(vh.ivPoster);
+        Picasso.with(getContext()).load(image).
+                transform(new RoundedCornersTransformation(10, 10)).
+                placeholder(R.drawable.poster_loading).
+                error(R.drawable.poster_unavailable).
+                into(vh.ivPoster);
 
         return convertView;
     }
