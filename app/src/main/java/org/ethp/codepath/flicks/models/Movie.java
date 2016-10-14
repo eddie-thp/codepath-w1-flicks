@@ -14,18 +14,24 @@ import java.util.List;
  */
 
 public class Movie {
-    private String posterPath;
     private String originalTitle;
     private String overview;
+    private String posterPath;
+    private String backdropPath;
 
     public Movie(JSONObject movieJson) throws JSONException {
-        this.posterPath = movieJson.getString("poster_path");
         this.originalTitle = movieJson.getString("original_title");
         this.overview = movieJson.getString("overview");
+        this.posterPath = movieJson.getString("poster_path");
+        this.backdropPath = movieJson.getString("backdrop_path");
     }
 
     public String getPosterPath() {
         return String.format("https://image.tmdb.org/t/p/w342/%s", posterPath);
+    }
+
+    public String getBackdropPath() {
+        return String.format("https://image.tmdb.org/t/p/w780/%s", backdropPath);
     }
 
     public String getOriginalTitle() {
