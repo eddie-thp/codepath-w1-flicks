@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Flicks</string>
+    <string name="error_fetch_movies">Failed to fectch movies</string>
 </resources>
