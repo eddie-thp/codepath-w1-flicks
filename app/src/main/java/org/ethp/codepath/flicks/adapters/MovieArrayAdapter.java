@@ -1,6 +1,7 @@
 package org.ethp.codepath.flicks.adapters;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import org.ethp.codepath.flicks.models.Movie;
 
 import java.util.List;
 
+import static android.R.attr.orientation;
 import static android.R.attr.resource;
 import static org.ethp.codepath.flicks.R.id.tvOverview;
 import static org.ethp.codepath.flicks.R.id.tvTitle;
@@ -70,7 +72,13 @@ public class MovieArrayAdapter extends ArrayAdapter {
         vh.tvOverview.setText(m.getOverview());
 
         // Use Picasso 3rd party lib to get image
-        Picasso.with(getContext()).load(m.getPosterPath()).into(vh.ivPoster);
+        String image = m.getPosterPath();
+        int orientation = getContext().getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            image = m.getBackdropPath();
+        }
+
+        Picasso.with(getContext()).load(image).into(vh.ivPoster);
 
         return convertView;
     }
