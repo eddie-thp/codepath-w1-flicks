@@ -17,6 +17,8 @@ import org.ethp.codepath.flicks.models.Movie;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 import static org.ethp.codepath.flicks.R.id.tvOverview;
@@ -32,10 +34,14 @@ public class MovieArrayAdapter extends ArrayAdapter {
      * View holder class, so that we don't have to execute
      * findViewById multiple times (improving performance)
      */
-    private static class ViewHolder {
-        ImageView ivPoster;
-        TextView tvTitle;
-        TextView tvOverview;
+    static class ViewHolder {
+        @BindView(R.id.ivMovieImage) ImageView ivPoster;
+        @BindView(R.id.tvTitle) TextView tvTitle;
+        @BindView(R.id.tvOverview) TextView tvOverview;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     public MovieArrayAdapter(Context context, List<Movie> movies) {
@@ -54,12 +60,9 @@ public class MovieArrayAdapter extends ArrayAdapter {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.item_movie, parent, false); // False means, do not attach
 
-            // Instantiate ViewHolder, cache/store in the convertView tag and set it up
-            vh = new ViewHolder();
+            // Instantiate ViewHolder, cache/store in the convertView tag (ButterKnife will handle the setup)
+            vh = new ViewHolder(convertView);
             convertView.setTag(vh);
-            vh.ivPoster = (ImageView) convertView.findViewById(R.id.ivMovieImage);
-            vh.tvTitle = (TextView) convertView.findViewById(tvTitle);
-            vh.tvOverview = (TextView) convertView.findViewById(tvOverview);
         } else {
             vh = (ViewHolder) convertView.getTag();
         }
