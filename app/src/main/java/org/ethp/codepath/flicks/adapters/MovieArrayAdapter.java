@@ -15,12 +15,14 @@ import com.squareup.picasso.Picasso;
 import org.ethp.codepath.flicks.R;
 import org.ethp.codepath.flicks.models.Movie;
 
+import java.sql.Types;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
+import static android.R.attr.type;
 import static org.ethp.codepath.flicks.R.id.tvOverview;
 import static org.ethp.codepath.flicks.R.id.tvTitle;
 
@@ -30,16 +32,46 @@ import static org.ethp.codepath.flicks.R.id.tvTitle;
 
 public class MovieArrayAdapter extends ArrayAdapter {
 
-    /**
-     * View holder class, so that we don't have to execute
+    private enum MovieTypeEnum { NONPOPULAR, POPULAR};
+
+    /*
+     * View holder classes, so that we don't have to execute
      * findViewById multiple times (improving performance)
      */
-    static class ViewHolder {
-        @BindView(R.id.ivMovieImage) ImageView ivPoster;
+
+    /**
+     * Base ViewHolder class for displaying movie images.
+     * It displays the poster or backdrop, depending on type (popular or not) or orientation
+     */
+    static class ImageHolder {
+        @BindView(R.id.ivMovieImage) ImageView ivMovieImage;
+
+        ImageHolder()
+        {
+            // Default constructor, ButterKnife.bind will be executed by the child
+        }
+
+        public ImageHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    /*
+     * I was not really happy with the huge switch/case described in the stackoverflow post:
+     * http://stackoverflow.com/questions/3514548/creating-viewholders-for-listviews-with-different-item-layouts/3515221#3515221
+     * so I'm using inheritance in this case, so that I don't have to duplicate logic
+     * - Maybe this is adds complexity if someone needs to maintain the code, but I think it's an interesting test for this case
+     * - Note that in order for it to work, both layouts need to have the same ids for the different Movie attributes
+     */
+
+    /**
+     * Non-popular movies holder displays title and overview information (an poster from superclass)
+     */
+    static class MovieHolder extends ImageHolder {
         @BindView(R.id.tvTitle) TextView tvTitle;
         @BindView(R.id.tvOverview) TextView tvOverview;
 
-        public ViewHolder(View view) {
+        public MovieHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }
@@ -48,36 +80,75 @@ public class MovieArrayAdapter extends ArrayAdapter {
         super(context, android.R.layout.simple_list_item_1, movies);
     }
 
+    @Override
+    public int getViewTypeCount() {
+        return MovieTypeEnum.values().length;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        int type = MovieTypeEnum.NONPOPULAR.ordinal();
+
+        // Considering we only have 2 types here, I'm only returning 0 or 1 instead of using an enum
+        // For future reference, take a look at how the codepath example/tutorial
+        // uses enums: "http://guides.codepath.com/android/Implementing-a-Heterogenous-ListView"
+        Movie m = (Movie) getItem(position);
+        if (m.isPopular()) {
+            type = MovieTypeEnum.POPULAR.ordinal();
+        }
+
+        return type;
+    }
+
+    private View getInflatedLayoutForType(int type) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        if (type == MovieTypeEnum.NONPOPULAR.ordinal()) {
+            return inflater.inflate(R.layout.item_movie, null);
+        } else {
+            return inflater.inflate(R.layout.item_popular_movie, null);
+        }
+    }
+
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        // Get the data item type for this position
+        int type = getItemViewType(position);
         // Get the data item for this position
         Movie m = (Movie) getItem(position);
 
         // Check if the existing view is being re-used
-        ViewHolder vh; // View lookup cache (stored in tag)
+        ImageHolder vh; // View lookup cache (stored in tag)
         if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.item_movie, parent, false); // False means, do not attach
+            // Inflate XML layout based on the type
+            convertView = getInflatedLayoutForType(type);
 
             // Instantiate ViewHolder, cache/store in the convertView tag (ButterKnife will handle the setup)
-            vh = new ViewHolder(convertView);
+            if (type == MovieTypeEnum.NONPOPULAR.ordinal()) {
+                vh = new MovieHolder(convertView);
+            } else {
+                vh = new ImageHolder(convertView);
+            }
+
             convertView.setTag(vh);
         } else {
-            vh = (ViewHolder) convertView.getTag();
+            vh = (ImageHolder) convertView.getTag();
         }
 
         // Reset/Clear existing image
-        vh.ivPoster.setImageResource(0);
+        vh.ivMovieImage.setImageResource(0);
 
-        // Populate data into vh references to views
-        vh.tvTitle.setText(m.getOriginalTitle());
-        vh.tvOverview.setText(m.getOverview());
+        if (type == MovieTypeEnum.NONPOPULAR.ordinal()) { // Non-popular
+            MovieHolder mh = (MovieHolder) vh;
+            // Populate data into vh references to views
+            mh.tvTitle.setText(m.getOriginalTitle());
+            mh.tvOverview.setText(m.getOverview());
+        }
 
         // Use Picasso 3rd party lib to get image
         String image = m.getPosterPath();
         int orientation = getContext().getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (type == MovieTypeEnum.POPULAR.ordinal() || orientation == Configuration.ORIENTATION_LANDSCAPE) {
             image = m.getBackdropPath();
         }
 
@@ -85,7 +156,7 @@ public class MovieArrayAdapter extends ArrayAdapter {
                 transform(new RoundedCornersTransformation(10, 10)).
                 placeholder(R.drawable.poster_loading).
                 error(R.drawable.poster_unavailable).
-                into(vh.ivPoster);
+                into(vh.ivMovieImage);
 
         return convertView;
     }
