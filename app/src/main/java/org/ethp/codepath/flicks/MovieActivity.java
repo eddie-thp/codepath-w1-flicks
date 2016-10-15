@@ -19,6 +19,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 import static android.R.transition.move;
@@ -28,24 +30,26 @@ public class MovieActivity extends AppCompatActivity {
     private List<Movie> movies;
     private MovieArrayAdapter movieAdapter;
 
-    private SwipeRefreshLayout swipeContainer;
-    private ListView lvItems;
+    @BindView(R.id.swipeContainer)
+    SwipeRefreshLayout swipeContainer;
+    @BindView(R.id.lvMovies)
+    ListView lvItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
 
+        ButterKnife.bind(this);
+
         // Setup the Movies adapter and list view
         movies = new ArrayList<Movie>();
         movieAdapter = new MovieArrayAdapter(this, movies);
-        lvItems = (ListView) findViewById(R.id.lvMovies);
         lvItems.setAdapter(movieAdapter);
         // Fetch the movies
         fetchMovies();
 
         // Setup the swipe container view refresh listener to fetch the movies
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -87,7 +91,7 @@ public class MovieActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
-                Toast.makeText(getBaseContext(), R.string.error_fetch_movies, Toast.LENGTH_LONG);
+                Toast.makeText(getBaseContext(), R.string.error_fetch_movies, Toast.LENGTH_LONG).show();
                 Log.e("FETCH_MOVIES", "Failed to fetch movies: " + throwable.getMessage(), throwable);
                 swipeContainer.setRefreshing(false);
             }
