@@ -16,6 +16,7 @@ import java.util.List;
 
 public class Movie implements Serializable {
 
+    private String id;
     private String originalTitle;
     private String overview;
     private String posterPath;
@@ -24,6 +25,7 @@ public class Movie implements Serializable {
     private double voteAverage;
 
     public Movie(JSONObject movieJson) throws JSONException {
+        this.id = movieJson.getString("id");
         this.originalTitle = movieJson.getString("original_title");
         this.overview = movieJson.getString("overview");
         this.posterPath = movieJson.getString("poster_path");
@@ -31,6 +33,8 @@ public class Movie implements Serializable {
         this.popularity = movieJson.getDouble("popularity");
         this.voteAverage = movieJson.getDouble("vote_average");
     }
+
+    public String getId() { return id; }
 
     public String getOriginalTitle() {
         return originalTitle;
@@ -43,7 +47,7 @@ public class Movie implements Serializable {
     public boolean isPopular() {
         // Using 10 just to see more than 1 popular item in the list
         // I wasn't getting many popular movies from the API
-        return (popularity >= 10);
+        return (voteAverage > 6);
     }
 
     public double getVoteAverage() { return voteAverage;}
