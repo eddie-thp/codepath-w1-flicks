@@ -11,15 +11,27 @@
     android:paddingTop="0dp"
     tools:context="org.ethp.codepath.flicks.MovieDetailsActivity">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_alignParentTop="true"
-        android:id="@+id/ivMovieImage"
-        tools:src="@mipmap/ic_launcher"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY" />
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent" android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:src="@mipmap/ic_launcher"
+            android:id="@+id/ivMovieImage"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY" />
+
+        <ImageView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:id="@+id/ivPlayButtonOverlay"
+            android:src="@drawable/play_circle_outline"
+            android:tint="@color/colorAccent"
+            android:padding="50dp" />
+
+    </FrameLayout>
 
     <RatingBar
         android:id="@+id/rbPopularity"
@@ -27,7 +39,7 @@
         android:layout_height="wrap_content"
         android:stepSize="0.1"
         android:isIndicator="true"
-        android:layout_below="@+id/ivMovieImage"
+        android:layout_below="@+id/frame"
         android:layout_centerHorizontal="true" />
 
     <TextView

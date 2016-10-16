@@ -32,8 +32,6 @@ public class MoviePlayerActivity extends YouTubeBaseActivity {
                     @Override
                     public void onInitializationSuccess(YouTubePlayer.Provider provider,
                                                         YouTubePlayer youTubePlayer, boolean b) {
-                        // a07e22bc18f5cb106bfe4cc1f83ad8ed
-                        // https://api.themoviedb.org/3/movie/333484/trailers?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed
 
                         youTubePlayer.loadVideo(trailer);
 
