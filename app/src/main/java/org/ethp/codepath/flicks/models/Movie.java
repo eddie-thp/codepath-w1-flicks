@@ -1,14 +1,28 @@
 package org.ethp.codepath.flicks.models;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
+import org.ethp.codepath.flicks.MovieActivity;
+import org.ethp.codepath.flicks.MoviePlayerActivity;
+import org.ethp.codepath.flicks.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by eddie_thp on 10/12/16.
@@ -74,4 +88,84 @@ public class Movie implements Serializable {
         }
         return movies;
     }
+
+    public void play(final Activity callerActivity) {
+        // e.g. https://api.themoviedb.org/3/movie/<movieId>/trailers?api_key=<API_KEY>
+
+        final String movieId = this.getId();
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("https://api.themoviedb.org/3/movie").newBuilder()
+                .addPathSegment(movieId)
+                .addPathSegment("trailers")
+                .addQueryParameter("api_key", callerActivity.getString(R.string.api_key_movie_db));
+
+
+        String url = urlBuilder.build().toString();
+
+        Request request = (new Request.Builder())
+                .url(url)
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+
+                String youTubeVideo = null;
+
+                try {
+                    String responseData = response.body().string();
+                    JSONObject json = new JSONObject(responseData);
+                    JSONArray youtubeVideos = json.getJSONArray("youtube");
+
+                    // Let's use the first trailer we find
+                    for (int i = 0; i < youtubeVideos.length(); i++)
+                    {
+                        JSONObject videoJson = youtubeVideos.getJSONObject(i);
+
+                        String type = videoJson.getString("type");
+                        if ("trailer".equalsIgnoreCase(type)) {
+                            youTubeVideo = videoJson.getString("source");
+                            break;
+                        }
+                    }
+                } catch (JSONException e) {
+                    Log.e("FETCH_MOVIE_TRAILERS", "Failed to process response " + e.getMessage(), e);
+                }
+
+                final String intentTrailer = youTubeVideo;
+
+                // Run view-related code back on the main thread
+                callerActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (intentTrailer != null)
+                        {
+                            Intent movieDetailsIntent = new Intent(callerActivity, MoviePlayerActivity.class);
+                            movieDetailsIntent.putExtra("TRAILER", intentTrailer);
+                            callerActivity.startActivity(movieDetailsIntent);
+                        } else {
+                            Toast.makeText(callerActivity, R.string.error_unable_to_play_movie_trailer, Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("FETCH_MOVIE_TRAILERS", "Failed to fetch movie id(" + movieId + ")  trailers: " + e.getMessage(), e);
+
+                // Run view-related code back on the main thread
+                callerActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(callerActivity, R.string.error_fetch_movie_trailers, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+    }
+
 }
