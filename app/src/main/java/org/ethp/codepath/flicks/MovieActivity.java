@@ -55,14 +55,13 @@ public class MovieActivity extends AppCompatActivity {
         movieAdapter = new MovieArrayAdapter(this, movies);
         lvItems.setAdapter(movieAdapter);
 
-        // Setup onMovieClick
         lvItems.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Movie movie = (Movie) parent.getItemAtPosition(position);
 
                 if (movie.isPopular()) {
-                    playMovie(movie);
+                    movie.play(MovieActivity.this);
                 } else {
                     Intent movieDetailsIntent = new Intent(MovieActivity.this, MovieDetailsActivity.class);
                     movieDetailsIntent.putExtra("MOVIE", movie);
@@ -71,6 +70,19 @@ public class MovieActivity extends AppCompatActivity {
 
             }
         });
+
+        // Allows user to see details of a popular video
+        lvItems.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Movie movie = (Movie) parent.getItemAtPosition(position);
+                Intent movieDetailsIntent = new Intent(MovieActivity.this, MovieDetailsActivity.class);
+                movieDetailsIntent.putExtra("MOVIE", movie);
+                startActivity(movieDetailsIntent);
+                return true;
+            }
+        });
+
 
         // Fetch the movies
         fetchMovies();
@@ -138,85 +150,6 @@ public class MovieActivity extends AppCompatActivity {
                     public void run() {
                         Toast.makeText(MovieActivity.this, R.string.error_fetch_movies, Toast.LENGTH_LONG).show();
                         swipeContainer.setRefreshing(false);
-                    }
-                });
-            }
-        });
-    }
-
-    private void playMovie(Movie movie) {
-        // e.g. https://api.themoviedb.org/3/movie/<movieId>/trailers?api_key=<API_KEY>
-
-        final String movieId = movie.getId();
-
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("https://api.themoviedb.org/3/movie").newBuilder()
-                .addPathSegment(movieId)
-                .addPathSegment("trailers")
-                .addQueryParameter("api_key", getString(R.string.api_key_movie_db));
-
-
-        String url = urlBuilder.build().toString();
-
-        Request request = (new Request.Builder())
-                .url(url)
-                .build();
-
-        OkHttpClient client = new OkHttpClient();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-
-                String youTubeVideo = null;
-
-                try {
-                    String responseData = response.body().string();
-                    JSONObject json = new JSONObject(responseData);
-                    JSONArray youtubeVideos = json.getJSONArray("youtube");
-
-                    // Let's use the first trailer we find
-                    for (int i = 0; i < youtubeVideos.length(); i++)
-                    {
-                        JSONObject videoJson = youtubeVideos.getJSONObject(i);
-
-                        String type = videoJson.getString("type");
-                        if ("trailer".equalsIgnoreCase(type)) {
-                            youTubeVideo = videoJson.getString("source");
-                            break;
-                        }
-                    }
-                } catch (JSONException e) {
-                    Log.e("FETCH_MOVIE_TRAILERS", "Failed to process response " + e.getMessage(), e);
-                }
-
-                final String intentTrailer = youTubeVideo;
-
-                // Run view-related code back on the main thread
-                MovieActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (intentTrailer != null)
-                        {
-                            Intent movieDetailsIntent = new Intent(MovieActivity.this, MoviePlayerActivity.class);
-                            movieDetailsIntent.putExtra("TRAILER", intentTrailer);
-                            startActivity(movieDetailsIntent);
-                        } else {
-                            Toast.makeText(MovieActivity.this, R.string.error_unable_to_play_movie_trailer, Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("FETCH_MOVIE_TRAILERS", "Failed to fetch movie id(" + movieId + ")  trailers: " + e.getMessage(), e);
-
-                // Run view-related code back on the main thread
-                MovieActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MovieActivity.this, R.string.error_fetch_movie_trailers, Toast.LENGTH_LONG).show();
                     }
                 });
             }

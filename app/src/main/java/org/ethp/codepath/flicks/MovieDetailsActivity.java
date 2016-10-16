@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -36,7 +37,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        Movie movie  = (Movie) getIntent().getSerializableExtra("MOVIE");
+        final Movie movie  = (Movie) getIntent().getSerializableExtra("MOVIE");
+
+        backdrop.setOnClickListener(new ImageView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                movie.play(MovieDetailsActivity.this);
+            }
+        });
 
         // Vote Average ranges from 0 - 10
         // rating = VoteAverage / (10) / NumStars -> 10/8 = 1.25f
