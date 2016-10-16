@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +14,14 @@ import java.util.List;
  * Created by eddie_thp on 10/12/16.
  */
 
-public class Movie {
+public class Movie implements Serializable {
+
     private String originalTitle;
     private String overview;
     private String posterPath;
     private String backdropPath;
     private double popularity;
+    private double voteAverage;
 
     public Movie(JSONObject movieJson) throws JSONException {
         this.originalTitle = movieJson.getString("original_title");
@@ -26,6 +29,7 @@ public class Movie {
         this.posterPath = movieJson.getString("poster_path");
         this.backdropPath = movieJson.getString("backdrop_path");
         this.popularity = movieJson.getDouble("popularity");
+        this.voteAverage = movieJson.getDouble("vote_average");
     }
 
     public String getOriginalTitle() {
@@ -41,6 +45,8 @@ public class Movie {
         // I wasn't getting many popular movies from the API
         return (popularity >= 10);
     }
+
+    public double getVoteAverage() { return voteAverage;}
 
     public String getPosterPath() {
         return String.format("https://image.tmdb.org/t/p/w342/%s", posterPath);
