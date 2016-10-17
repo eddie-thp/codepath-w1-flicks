@@ -62,7 +62,7 @@ Here's a walkthrough of implemented user stories.
 
 **Note:** Due to missing dependencies in the emulator, YouTube player in the git walkthrough doesn't displays the video, but it has been successfully tested on an Android device.
 
-<img src='https://i.imgur.com/nPqo2sY.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://i.imgur.com/Q75BmWy.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
