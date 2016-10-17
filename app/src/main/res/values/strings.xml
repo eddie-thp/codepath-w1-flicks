@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Flicks</string>
+    <string name="title_movies_activity">Flicks: Movies</string>
+    <string name="title_movie_details_activity">Flicks: Movie details</string>
     <string name="error_fetch_movies">Failed to fetch movies</string>
     <string name="error_fetch_movie_trailers">Failed to fetch movie trailers</string>
     <string name="error_unable_to_play_movie_trailer">Unable to play movie trailer</string>

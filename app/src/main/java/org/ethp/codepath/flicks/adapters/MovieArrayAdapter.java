@@ -146,16 +146,20 @@ public class MovieArrayAdapter extends ArrayAdapter {
         }
 
         // Use Picasso 3rd party lib to get image
+        int loadingImageRes = R.mipmap.poster_loading;
+        int noImageRes = R.mipmap.poster_no_image;
         String image = m.getPosterPath();
         int orientation = getContext().getResources().getConfiguration().orientation;
         if (type == MovieTypeEnum.POPULAR.ordinal() || orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            loadingImageRes = R.mipmap.backdrop_loading;
+            noImageRes = R.mipmap.backdrop_no_image;
             image = m.getBackdropPath();
         }
 
         Picasso.with(getContext()).load(image).
                 transform(new RoundedCornersTransformation(10, 10)).
-                placeholder(R.drawable.poster_loading).
-                error(R.drawable.poster_unavailable).
+                placeholder(loadingImageRes).
+                error(noImageRes).
                 into(vh.ivMovieImage);
 
         return convertView;

@@ -20,5 +20,4 @@
         android:tint="@color/colorAccent"
         android:padding="50dp" />
 
-
 </FrameLayout>
